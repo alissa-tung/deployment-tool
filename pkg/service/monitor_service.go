@@ -377,3 +377,74 @@ func (h *HStreamExporter) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx
 func (h *HStreamExporter) getDirs() (string, string) {
 	return h.spec.RemoteCfgPath, h.spec.DataDir
 }
+
+type ElasticSearch struct {
+	spec            spec.ElasticSearchSpec
+	ContainerName   string
+	DisableSecurity bool
+}
+
+func NewElasticSearch(esSpec spec.ElasticSearchSpec, disableSecurity bool) *ElasticSearch {
+	return &ElasticSearch{
+		spec:          esSpec,
+		ContainerName: spec.ElasticSearchDefaultContainerName,
+		// FIXME: currently, only support `xpack.security.enabled=false`
+		DisableSecurity: false,
+	}
+}
+
+func (es *ElasticSearch) GetServiceName() string {
+	return "elasticsearch"
+}
+
+func (es *ElasticSearch) getDirs() (string, string) {
+	return es.spec.RemoteCfgPath, es.spec.DataDir
+}
+
+func (es *ElasticSearch) Display() map[string]utils.DisplayedComponent {
+	cfgDir, dataDir := es.getDirs()
+	elasticsearch := utils.DisplayedComponent{
+		Name:          "ElasticSearch",
+		Host:          es.spec.Host,
+		Ports:         strconv.Itoa(es.spec.Port),
+		ContainerName: es.ContainerName,
+		Image:         es.spec.Image,
+		Paths:         strings.Join([]string{cfgDir, dataDir}, ","),
+	}
+	return map[string]utils.DisplayedComponent{"elasticsearch": elasticsearch}
+}
+
+func (es *ElasticSearch) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	cfgDir, dataDir := es.getDirs()
+	args := append([]string{}, "sudo mkdir -p", cfgDir, dataDir)
+	return &executor.ExecuteCtx{Target: es.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (es *ElasticSearch) Deploy(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	mountPoints := []spec.MountPoints{
+		{es.spec.RemoteCfgPath, "/usr/share/elasticsearch/config"},
+	}
+	args := spec.GetDockerExecCmd(globalCtx.containerCfg, es.spec.ContainerCfg, es.ContainerName, true, mountPoints...)
+	if es.DisableSecurity {
+		args = append(args, "-e xpack.security.enabled=false")
+	}
+	args = append(args, "-e discovery.type=single-node")
+	args = append(args, es.spec.Image)
+	return &executor.ExecuteCtx{Target: es.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (es *ElasticSearch) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	args := []string{"docker rm -f", es.ContainerName}
+	args = append(args, "&&", "sudo rm -rf", es.spec.DataDir, es.spec.RemoteCfgPath)
+	return &executor.ExecuteCtx{Target: es.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (es *ElasticSearch) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
+	position := utils.ScpDir(
+		filepath.Dir(es.spec.LocalCfgPath), "/usr/share/elasticsearch/config",
+	)
+
+	return &executor.TransferCtx{
+		Target: es.spec.Host, Position: position,
+	}
+}

@@ -27,18 +27,34 @@ const (
 	HStreamExporterDefaultImage         = "hstreamdb/hstream-exporter"
 	HStreamExporterDefaultCfgDir        = "/hstream/deploy/hstream-exporter"
 	HStreamExporterDefaultDataDir       = "/hstream/data/hstream-exporter"
+
+	ElasticSearchDefaultContainerName = "deploy_elastic_search"
+	ElasticSearchDefaultImage         = "docker.elastic.co/elasticsearch/elasticsearch"
+	ElasticSearchDefaultCfgDir        = "/hstream/deploy/elasticsearch"
+	ElasticSearchDefaultDataDir       = "/hstream/data/elasticsearch"
+
+	KibanaDefaultContainerName = "deploy_kibana"
+	KibanaDefaultImage         = "docker.elastic.co/kibana/kibana"
+	KibanaDefaultCfgDir        = "/hstream/deploy/kibana"
+	KibanaDefaultDataDir       = "/hstream/data/kibana"
+
+	FilebeatDefaultContainerName = "deploy_filebeat"
+	FilebeatDefaultImage         = "docker.elastic.co/beats/filebeat"
+	FilebeatDefaultCfgDir        = "/hstream/deploy/filebeat"
+	FilebeatDefaultDataDir       = "/hstream/data/filebeat"
 )
 
 type MonitorSpec struct {
-	NodeExporterImage   string       `yaml:"node_exporter_image"`
-	NodeExporterPort    int          `yaml:"node_exporter_port" default:"9100"`
-	CadvisorImage       string       `yaml:"cadvisor_image"`
-	CadvisorPort        int          `yaml:"cadvisor_port" default:"7000"`
-	ExcludedHosts       []string     `yaml:"excluded_hosts"`
-	RemoteCfgPath       string       `yaml:"remote_config_path"`
-	DataDir             string       `yaml:"data_dir"`
-	GrafanaDisableLogin bool         `yaml:"grafana_disable_login"`
-	ContainerCfg        ContainerCfg `yaml:"container_config"`
+	NodeExporterImage      string       `yaml:"node_exporter_image"`
+	NodeExporterPort       int          `yaml:"node_exporter_port" default:"9100"`
+	CadvisorImage          string       `yaml:"cadvisor_image"`
+	CadvisorPort           int          `yaml:"cadvisor_port" default:"7000"`
+	ExcludedHosts          []string     `yaml:"excluded_hosts"`
+	RemoteCfgPath          string       `yaml:"remote_config_path"`
+	DataDir                string       `yaml:"data_dir"`
+	GrafanaDisableLogin    bool         `yaml:"grafana_disable_login"`
+	ElasticDisableSecurity bool         `yaml:"elastic_disable_security"`
+	ContainerCfg           ContainerCfg `yaml:"container_config"`
 }
 
 func (m *MonitorSpec) SetDefaultDataDir() {
@@ -126,6 +142,35 @@ type HStreamExporterSpec struct {
 	Port          int          `yaml:"port" default:"9200"`
 	Image         string       `yaml:"image"`
 	DataDir       string       `yaml:"data_dir"`
+	RemoteCfgPath string       `yaml:"remote_config_path"`
+	ContainerCfg  ContainerCfg `yaml:"container_config"`
+}
+
+type ElasticSearchSpec struct {
+	Host    string `yaml:"host"`
+	SSHPort int    `yaml:"ssh_port" default:"22"`
+	Port    int    `yaml:"port" default:"9200"`
+	Image   string `yaml:"image"`
+	DataDir string `yaml:"data_dir"`
+	// FIXME: gen cfg
+	LocalCfgPath  string       `yaml:"local_cfg_path"`
+	RemoteCfgPath string       `yaml:"remote_config_path"`
+	ContainerCfg  ContainerCfg `yaml:"container_config"`
+}
+
+type KibanaSpec struct {
+	Host          string       `yaml:"host"`
+	SSHPort       int          `yaml:"ssh_port" default:"22"`
+	Port          int          `yaml:"port" default:"5601"`
+	Image         string       `yaml:"image"`
+	RemoteCfgPath string       `yaml:"remote_config_path"`
+	ContainerCfg  ContainerCfg `yaml:"container_config"`
+}
+
+type FilebeatSpec struct {
+	Host          string       `yaml:"host"`
+	SSHPort       int          `yaml:"ssh_port" default:"22"`
+	Image         string       `yaml:"image"`
 	RemoteCfgPath string       `yaml:"remote_config_path"`
 	ContainerCfg  ContainerCfg `yaml:"container_config"`
 }
