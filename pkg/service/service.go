@@ -162,6 +162,11 @@ func NewServices(c spec.ComponentsSpec) (*Services, error) {
 		grafana = append(grafana, NewGrafana(v, c.Monitor.GrafanaDisableLogin))
 	}
 
+	elasticSearch := make([]*ElasticSearch, 0, len(c.ElasticSearch))
+	for _, v := range c.ElasticSearch {
+		elasticSearch = append(elasticSearch, NewElasticSearch(v, c.Monitor.ElasticDisableSecurity))
+	}
+
 	globalCtx, err := newGlobalCtx(c, hosts)
 	if err != nil {
 		return nil, err
