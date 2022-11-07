@@ -24,7 +24,7 @@ type ComponentsSpec struct {
 	AlertManager    []AlertManagerSpec    `yaml:"alertmanager"`
 	HStreamExporter []HStreamExporterSpec `yaml:"hstream_exporter"`
 	HttpServer      []HttpServerSpec      `yaml:"http_server"`
-	ElasticSearch   []ElasticSearchSpec   `yaml:"elastic_search"`
+	ElasticSearch   []ElasticSearchSpec   `yaml:"elasticsearch"`
 }
 
 func (c *ComponentsSpec) GetHosts() []string {

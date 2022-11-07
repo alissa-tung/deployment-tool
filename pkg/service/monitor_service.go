@@ -440,11 +440,5 @@ func (es *ElasticSearch) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (es *ElasticSearch) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
-	position := utils.ScpDir(
-		filepath.Dir(es.spec.LocalCfgPath), "/usr/share/elasticsearch/config",
-	)
-
-	return &executor.TransferCtx{
-		Target: es.spec.Host, Position: position,
-	}
+	return nil
 }

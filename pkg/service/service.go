@@ -105,6 +105,7 @@ type Services struct {
 	AlertManager    []*AlertManager
 	HStreamExporter []*HStreamExporter
 	HttpServer      []*HttpServer
+	ElasticSearch   []*ElasticSearch
 }
 
 func NewServices(c spec.ComponentsSpec) (*Services, error) {
@@ -166,6 +167,7 @@ func NewServices(c spec.ComponentsSpec) (*Services, error) {
 	for _, v := range c.ElasticSearch {
 		elasticSearch = append(elasticSearch, NewElasticSearch(v, c.Monitor.ElasticDisableSecurity))
 	}
+	fmt.Println(elasticSearch)
 
 	globalCtx, err := newGlobalCtx(c, hosts)
 	if err != nil {
@@ -206,6 +208,7 @@ func NewServices(c spec.ComponentsSpec) (*Services, error) {
 		AlertManager:    alertManager,
 		HStreamExporter: hstreamExporter,
 		HttpServer:      httpServer,
+		ElasticSearch:   elasticSearch,
 	}, nil
 }
 

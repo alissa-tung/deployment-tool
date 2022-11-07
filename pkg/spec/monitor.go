@@ -92,6 +92,10 @@ func (p *PrometheusSpec) SetDefaultRemoteCfgPath() {
 	p.RemoteCfgPath = PrometheusDefaultCfgDir
 }
 
+func (es *ElasticSearchSpec) SetDefaultRemoteCfgPath() {
+	es.RemoteCfgPath = ElasticSearchDefaultCfgDir
+}
+
 type GrafanaSpec struct {
 	Host          string       `yaml:"host"`
 	SSHPort       int          `yaml:"ssh_port" default:"22"`
@@ -185,4 +189,8 @@ func (g *HStreamExporterSpec) SetDefaultImage() {
 
 func (g *HStreamExporterSpec) SetDefaultRemoteCfgPath() {
 	g.RemoteCfgPath = HStreamExporterDefaultCfgDir
+}
+
+func (es *ElasticSearchSpec) SetDefaultDataDir() {
+	es.DataDir = ElasticSearchDefaultDataDir
 }

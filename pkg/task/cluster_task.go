@@ -38,6 +38,12 @@ func SetUpCluster(executor ext.Executor, services *service.Services) error {
 		ctx.run(SetUpGrafanaService)
 		ctx.run(SetUpAlertService)
 	}
+	// FIXME: filebeat
+	if len(services.ElasticSearch) != 0 {
+		fmt.Println("before run ElasticSearch")
+		ctx.run(SetUpElasticSearch)
+		fmt.Println("after run ElasticSearch")
+	}
 	return ctx.err
 }
 
@@ -200,6 +206,12 @@ func RemoveAlertService(executor ext.Executor, services *service.Services) error
 	return removeCluster(executor, services.Global, services.AlertManager)
 }
 
+func SetUpElasticSearch(executor ext.Executor, services *service.Services) error {
+	fmt.Println("call startCluster")
+	fmt.Println(services.ElasticSearch)
+	return startCluster(executor, services.Global, services.ElasticSearch)
+}
+
 func startCluster[S service.Service](executor ext.Executor, ctx *service.GlobalCtx, services []S) error {
 	if len(services) == 0 {
 		return nil
@@ -213,7 +225,7 @@ func startCluster[S service.Service](executor ext.Executor, ctx *service.GlobalC
 		}
 	}
 
-	fmt.Printf("Set up %s service success/n", services[0].GetServiceName())
+	fmt.Printf("Set up %s service success\n", services[0].GetServiceName())
 	return nil
 }
 
@@ -230,7 +242,7 @@ func removeCluster[S service.Service](executor ext.Executor, ctx *service.Global
 		}
 	}
 
-	fmt.Printf("Remove %s cluster success/n", services[0].GetServiceName())
+	fmt.Printf("Remove %s cluster success\n", services[0].GetServiceName())
 	return nil
 }
 
