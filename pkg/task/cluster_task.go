@@ -38,9 +38,10 @@ func SetUpCluster(executor ext.Executor, services *service.Services) error {
 		ctx.run(SetUpGrafanaService)
 		ctx.run(SetUpAlertService)
 	}
-	// FIXME: filebeat
-	if len(services.ElasticSearch) != 0 {
+	if len(services.Filebeat) != 0 {
 		ctx.run(SetUpElasticSearch)
+		ctx.run(SetUpKibana)
+		ctx.run(SetUpFilebeat)
 	}
 	return ctx.err
 }
@@ -206,6 +207,14 @@ func RemoveAlertService(executor ext.Executor, services *service.Services) error
 
 func SetUpElasticSearch(executor ext.Executor, services *service.Services) error {
 	return startCluster(executor, services.Global, services.ElasticSearch)
+}
+
+func SetUpKibana(executor ext.Executor, services *service.Services) error {
+	return startCluster(executor, services.Global, services.Kibana)
+}
+
+func SetUpFilebeat(executor ext.Executor, services *service.Services) error {
+	return nil
 }
 
 func startCluster[S service.Service](executor ext.Executor, ctx *service.GlobalCtx, services []S) error {

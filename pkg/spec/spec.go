@@ -25,6 +25,7 @@ type ComponentsSpec struct {
 	HStreamExporter []HStreamExporterSpec `yaml:"hstream_exporter"`
 	HttpServer      []HttpServerSpec      `yaml:"http_server"`
 	ElasticSearch   []ElasticSearchSpec   `yaml:"elasticsearch"`
+	Kibana          []KibanaSpec          `yaml:"kibana"`
 }
 
 func (c *ComponentsSpec) GetHosts() []string {

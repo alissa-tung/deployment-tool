@@ -384,6 +384,16 @@ type ElasticSearch struct {
 	DisableSecurity bool
 }
 
+type Kibana struct {
+	spec          spec.KibanaSpec
+	ContainerName string
+}
+
+type Filebeat struct {
+	spec          spec.FilebeatSpec
+	ContainerName string
+}
+
 func NewElasticSearch(esSpec spec.ElasticSearchSpec, disableSecurity bool) *ElasticSearch {
 	return &ElasticSearch{
 		spec:          esSpec,
@@ -440,5 +450,52 @@ func (es *ElasticSearch) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (es *ElasticSearch) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
+	return nil
+}
+
+func NewKibana(kibanaSpec spec.KibanaSpec) *Kibana {
+	return &Kibana{
+		spec:          kibanaSpec,
+		ContainerName: spec.KibanaDefaultContainerName,
+	}
+}
+
+func (k *Kibana) GetServiceName() string {
+	return "kibana"
+}
+
+func (k *Kibana) Display() map[string]utils.DisplayedComponent {
+	cfgDir := k.spec.RemoteCfgPath
+	elasticsearch := utils.DisplayedComponent{
+		Name:          "Kibana",
+		Host:          k.spec.Host,
+		Ports:         strconv.Itoa(k.spec.Port),
+		ContainerName: k.ContainerName,
+		Image:         k.spec.Image,
+		Paths:         strings.Join([]string{cfgDir}, ","),
+	}
+	return map[string]utils.DisplayedComponent{"kibana": elasticsearch}
+}
+
+func (k *Kibana) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	cfgDir := k.spec.RemoteCfgPath
+	args := append([]string{}, "sudo mkdir -p", cfgDir)
+	return &executor.ExecuteCtx{Target: k.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (k *Kibana) Deploy(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	mountPoints := []spec.MountPoints{}
+	args := spec.GetDockerExecCmd(globalCtx.containerCfg, k.spec.ContainerCfg, k.ContainerName, true, mountPoints...)
+	args = append(args, k.spec.Image)
+	return &executor.ExecuteCtx{Target: k.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (k *Kibana) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	args := []string{"docker rm -f", k.ContainerName}
+	args = append(args, "&&", "sudo rm -rf", k.spec.RemoteCfgPath)
+	return &executor.ExecuteCtx{Target: k.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (k *Kibana) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
 	return nil
 }
