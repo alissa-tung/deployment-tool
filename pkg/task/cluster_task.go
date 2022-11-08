@@ -214,7 +214,7 @@ func SetUpKibana(executor ext.Executor, services *service.Services) error {
 }
 
 func SetUpFilebeat(executor ext.Executor, services *service.Services) error {
-	return nil
+	return startCluster(executor, services.Global, services.Filebeat)
 }
 
 func startCluster[S service.Service](executor ext.Executor, ctx *service.GlobalCtx, services []S) error {

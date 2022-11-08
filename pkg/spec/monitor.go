@@ -96,6 +96,20 @@ func (es *ElasticSearchSpec) SetDefaultRemoteCfgPath() {
 	es.RemoteCfgPath = ElasticSearchDefaultCfgDir
 }
 
+func (fb *FilebeatSpec) SetDefaultRemoteCfgPath() {
+	fb.RemoteCfgPath = FilebeatDefaultCfgDir
+}
+
+func (fb *FilebeatSpec) SetDefaultDataDir() {
+}
+
+func (k *KibanaSpec) SetDefaultDataDir() {
+}
+
+func (k *KibanaSpec) SetDefaultRemoteCfgPath() {
+	k.RemoteCfgPath = KibanaDefaultCfgDir
+}
+
 type GrafanaSpec struct {
 	Host          string       `yaml:"host"`
 	SSHPort       int          `yaml:"ssh_port" default:"22"`

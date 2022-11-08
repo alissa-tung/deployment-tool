@@ -464,7 +464,7 @@ func (k *Kibana) GetServiceName() string {
 
 func (k *Kibana) Display() map[string]utils.DisplayedComponent {
 	cfgDir := k.spec.RemoteCfgPath
-	elasticsearch := utils.DisplayedComponent{
+	kibana := utils.DisplayedComponent{
 		Name:          "Kibana",
 		Host:          k.spec.Host,
 		Ports:         strconv.Itoa(k.spec.Port),
@@ -472,7 +472,7 @@ func (k *Kibana) Display() map[string]utils.DisplayedComponent {
 		Image:         k.spec.Image,
 		Paths:         strings.Join([]string{cfgDir}, ","),
 	}
-	return map[string]utils.DisplayedComponent{"kibana": elasticsearch}
+	return map[string]utils.DisplayedComponent{"kibana": kibana}
 }
 
 func (k *Kibana) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
@@ -495,5 +495,51 @@ func (k *Kibana) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (k *Kibana) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
+	return nil
+}
+
+func NewFilebeat(fbSpec spec.FilebeatSpec) *Filebeat {
+	return &Filebeat{
+		spec:          fbSpec,
+		ContainerName: spec.FilebeatDefaultContainerName,
+	}
+}
+func (fb *Filebeat) GetServiceName() string {
+	return "filebeat"
+}
+
+func (fb *Filebeat) Display() map[string]utils.DisplayedComponent {
+	cfgDir := fb.spec.RemoteCfgPath
+	kibana := utils.DisplayedComponent{
+		Name:          "Filebeat",
+		Host:          fb.spec.Host,
+		Ports:         "",
+		ContainerName: fb.ContainerName,
+		Image:         fb.spec.Image,
+		Paths:         strings.Join([]string{cfgDir}, ","),
+	}
+	return map[string]utils.DisplayedComponent{"filebeat": kibana}
+}
+
+func (fb *Filebeat) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	cfgDir := fb.spec.RemoteCfgPath
+	args := append([]string{}, "sudo mkdir -p", cfgDir)
+	return &executor.ExecuteCtx{Target: fb.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (fb *Filebeat) Deploy(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	mountPoints := []spec.MountPoints{}
+	args := spec.GetDockerExecCmd(globalCtx.containerCfg, fb.spec.ContainerCfg, fb.ContainerName, true, mountPoints...)
+	args = append(args, fb.spec.Image)
+	return &executor.ExecuteCtx{Target: fb.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (fb *Filebeat) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
+	args := []string{"docker rm -f", fb.ContainerName}
+	args = append(args, "&&", "sudo rm -rf", fb.spec.RemoteCfgPath)
+	return &executor.ExecuteCtx{Target: fb.spec.Host, Cmd: strings.Join(args, " ")}
+}
+
+func (fb *Filebeat) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
 	return nil
 }

@@ -26,6 +26,7 @@ type ComponentsSpec struct {
 	HttpServer      []HttpServerSpec      `yaml:"http_server"`
 	ElasticSearch   []ElasticSearchSpec   `yaml:"elasticsearch"`
 	Kibana          []KibanaSpec          `yaml:"kibana"`
+	Filebeat        []FilebeatSpec        `yaml:"filebeat"`
 }
 
 func (c *ComponentsSpec) GetHosts() []string {
