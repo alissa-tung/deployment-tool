@@ -528,7 +528,13 @@ func (fb *Filebeat) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (fb *Filebeat) Deploy(globalCtx *GlobalCtx) *executor.ExecuteCtx {
-	mountPoints := []spec.MountPoints{}
+	mountPoints := []spec.MountPoints{
+		{"/var/lib/docker", "/var/lib/docker:ro"},
+		{"/var/run/docker.sock", "/var/run/docker.sock"},
+	}
+	if fb.spec.LocalCfgPath != "" {
+		mountPoints = append(mountPoints, spec.MountPoints{Local: fb.spec.LocalCfgPath, Remote: "/usr/share/filebeat/filebeat.yml"})
+	}
 	args := spec.GetDockerExecCmd(globalCtx.containerCfg, fb.spec.ContainerCfg, fb.ContainerName, true, mountPoints...)
 	args = append(args, fb.spec.Image)
 	return &executor.ExecuteCtx{Target: fb.spec.Host, Cmd: strings.Join(args, " ")}
@@ -541,5 +547,12 @@ func (fb *Filebeat) Remove(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (fb *Filebeat) SyncConfig(globalCtx *GlobalCtx) *executor.TransferCtx {
-	return nil
+	localCfg := fb.spec.LocalCfgPath
+	if localCfg == "" {
+		return nil
+	}
+	position := utils.ScpDir(fb.spec.LocalCfgPath, fb.spec.RemoteCfgPath)
+	return &executor.TransferCtx{
+		Target: fb.spec.Host, Position: position,
+	}
 }

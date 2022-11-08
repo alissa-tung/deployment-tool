@@ -36,12 +36,10 @@ const (
 	KibanaDefaultContainerName = "deploy_kibana"
 	KibanaDefaultImage         = "docker.elastic.co/kibana/kibana:8.4.3"
 	KibanaDefaultCfgDir        = "/hstream/deploy/kibana"
-	KibanaDefaultDataDir       = "/hstream/data/kibana"
 
 	FilebeatDefaultContainerName = "deploy_filebeat"
 	FilebeatDefaultImage         = "docker.elastic.co/beats/filebeat:8.4.3"
 	FilebeatDefaultCfgDir        = "/hstream/deploy/filebeat"
-	FilebeatDefaultDataDir       = "/hstream/data/filebeat"
 )
 
 type MonitorSpec struct {
@@ -201,6 +199,7 @@ type FilebeatSpec struct {
 	Host          string       `yaml:"host"`
 	SSHPort       int          `yaml:"ssh_port" default:"22"`
 	Image         string       `yaml:"image"`
+	LocalCfgPath  string       `yaml:"local_cfg_path"`
 	RemoteCfgPath string       `yaml:"remote_config_path"`
 	ContainerCfg  ContainerCfg `yaml:"container_config"`
 }
