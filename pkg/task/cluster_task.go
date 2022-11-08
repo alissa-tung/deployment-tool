@@ -57,6 +57,12 @@ func RemoveCluster(executor ext.Executor, services *service.Services) error {
 		ctx.run(RemoveHStreamExporterService)
 		ctx.run(RemoveHStreamMonitorStack)
 	}
+	if len(services.Filebeat) != 0 {
+		ctx.run(RemoveFilebeat)
+		ctx.run(RemoveKibana)
+		ctx.run(RemoveElasticSearch)
+	}
+
 	ctx.run(RemoveHttpServerService)
 	ctx.run(RemoveHServerCluster)
 	ctx.run(RemoveHStoreCluster)
@@ -101,6 +107,18 @@ func SetUpMetaStoreCluster(executor ext.Executor, services *service.Services) er
 
 func RemoveMetaStoreCluster(executor ext.Executor, services *service.Services) error {
 	return removeCluster(executor, services.Global, services.MetaStore)
+}
+
+func RemoveFilebeat(executor ext.Executor, services *service.Services) error {
+	return removeCluster(executor, services.Global, services.Filebeat)
+}
+
+func RemoveKibana(executor ext.Executor, services *service.Services) error {
+	return removeCluster(executor, services.Global, services.Kibana)
+}
+
+func RemoveElasticSearch(executor ext.Executor, services *service.Services) error {
+	return removeCluster(executor, services.Global, services.ElasticSearch)
 }
 
 func SetUpHStoreCluster(executor ext.Executor, services *service.Services) error {
