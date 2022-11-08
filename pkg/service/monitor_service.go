@@ -431,9 +431,7 @@ func (es *ElasticSearch) InitEnv(globalCtx *GlobalCtx) *executor.ExecuteCtx {
 }
 
 func (es *ElasticSearch) Deploy(globalCtx *GlobalCtx) *executor.ExecuteCtx {
-	mountPoints := []spec.MountPoints{
-		{es.spec.RemoteCfgPath, "/usr/share/elasticsearch/config"},
-	}
+	mountPoints := []spec.MountPoints{}
 	args := spec.GetDockerExecCmd(globalCtx.containerCfg, es.spec.ContainerCfg, es.ContainerName, true, mountPoints...)
 	if es.DisableSecurity {
 		args = append(args, "-e xpack.security.enabled=false")
