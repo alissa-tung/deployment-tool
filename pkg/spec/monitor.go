@@ -29,17 +29,17 @@ const (
 	HStreamExporterDefaultDataDir       = "/hstream/data/hstream-exporter"
 
 	ElasticSearchDefaultContainerName = "deploy_elastic_search"
-	ElasticSearchDefaultImage         = "docker.elastic.co/elasticsearch/elasticsearch"
+	ElasticSearchDefaultImage         = "docker.elastic.co/elasticsearch/elasticsearch:8.4.3"
 	ElasticSearchDefaultCfgDir        = "/hstream/deploy/elasticsearch"
 	ElasticSearchDefaultDataDir       = "/hstream/data/elasticsearch"
 
 	KibanaDefaultContainerName = "deploy_kibana"
-	KibanaDefaultImage         = "docker.elastic.co/kibana/kibana"
+	KibanaDefaultImage         = "docker.elastic.co/kibana/kibana:8.4.3"
 	KibanaDefaultCfgDir        = "/hstream/deploy/kibana"
 	KibanaDefaultDataDir       = "/hstream/data/kibana"
 
 	FilebeatDefaultContainerName = "deploy_filebeat"
-	FilebeatDefaultImage         = "docker.elastic.co/beats/filebeat"
+	FilebeatDefaultImage         = "docker.elastic.co/beats/filebeat:8.4.3"
 	FilebeatDefaultCfgDir        = "/hstream/deploy/filebeat"
 	FilebeatDefaultDataDir       = "/hstream/data/filebeat"
 )
@@ -104,6 +104,18 @@ func (fb *FilebeatSpec) SetDefaultDataDir() {
 }
 
 func (k *KibanaSpec) SetDefaultDataDir() {
+}
+
+func (k *KibanaSpec) SetDefaultImage() {
+	k.Image = KibanaDefaultImage
+}
+
+func (fb *FilebeatSpec) SetDefaultImage() {
+	fb.Image = FilebeatDefaultImage
+}
+
+func (es *ElasticSearchSpec) SetDefaultImage() {
+	es.Image = ElasticSearchDefaultImage
 }
 
 func (k *KibanaSpec) SetDefaultRemoteCfgPath() {

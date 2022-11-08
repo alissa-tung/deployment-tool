@@ -38,6 +38,8 @@ func SetUpCluster(executor ext.Executor, services *service.Services) error {
 		ctx.run(SetUpGrafanaService)
 		ctx.run(SetUpAlertService)
 	}
+
+	fmt.Printf("[DEBUG]: len(services.Filebeat) = %v\n", len(services.Filebeat))
 	if len(services.Filebeat) != 0 {
 		ctx.run(SetUpElasticSearch)
 		ctx.run(SetUpKibana)
