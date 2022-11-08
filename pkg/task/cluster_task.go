@@ -40,9 +40,7 @@ func SetUpCluster(executor ext.Executor, services *service.Services) error {
 	}
 	// FIXME: filebeat
 	if len(services.ElasticSearch) != 0 {
-		fmt.Println("before run ElasticSearch")
 		ctx.run(SetUpElasticSearch)
-		fmt.Println("after run ElasticSearch")
 	}
 	return ctx.err
 }
@@ -207,8 +205,6 @@ func RemoveAlertService(executor ext.Executor, services *service.Services) error
 }
 
 func SetUpElasticSearch(executor ext.Executor, services *service.Services) error {
-	fmt.Println("call startCluster")
-	fmt.Println(services.ElasticSearch)
 	return startCluster(executor, services.Global, services.ElasticSearch)
 }
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	ext "github.com/hstreamdb/deployment-tool/pkg/executor"
 	"github.com/hstreamdb/deployment-tool/pkg/service"
 	"github.com/hstreamdb/deployment-tool/pkg/spec"
@@ -42,8 +41,6 @@ func newDeploy() *cobra.Command {
 				return err
 			}
 			services, err = service.NewServices(config)
-			fmt.Println(services)
-			fmt.Println(services.ElasticSearch)
 			if err != nil {
 				return err
 			}

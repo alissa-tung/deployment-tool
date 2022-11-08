@@ -167,7 +167,6 @@ func NewServices(c spec.ComponentsSpec) (*Services, error) {
 	for _, v := range c.ElasticSearch {
 		elasticSearch = append(elasticSearch, NewElasticSearch(v, c.Monitor.ElasticDisableSecurity))
 	}
-	fmt.Println(elasticSearch)
 
 	globalCtx, err := newGlobalCtx(c, hosts)
 	if err != nil {
